@@ -1,6 +1,14 @@
+/*
+ * @Description: 
+ * @Version: 2.0
+ * @Author: zhouhong07
+ * @Date: 2019-10-10 16:39:42
+ * @LastEditors: zhouhong07
+ * @LastEditTime: 2019-10-29 10:28:46
+ */
 import React from 'react';
 import logo from './logo.svg';
-import './App.css';
+import './App.scss';
 
 function App() {
   return (
