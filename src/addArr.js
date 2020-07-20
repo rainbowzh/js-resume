@@ -1,12 +1,13 @@
 /*
- * @Description: 合并两个有序数组 
+ * @Description: 归并排序 
  * @Version: 2.0
  * @Author: zhouhong07
  * @Date: 2020-02-28 10:17:16
  * @LastEditors: zhouhong07
- * @LastEditTime: 2020-07-14 11:30:20
+ * @LastEditTime: 2020-07-20 11:15:51
  */
 
+//合并两个有序数组
 const mergeArr = (arr1, arr2) => {
   let temp = arr1.length - arr2.length ;
   let len = arr1.length - arr2.length > 0 ? arr2.length  : arr1.length ;
@@ -36,7 +37,7 @@ console.log(mergeSort(arr))
  
 function merge(left, right) {
   var tmp = [];
- 
+ //[1,3] [2,4]
   while (left.length && right.length) {
     if (left[0] < right[0])
       tmp.push(left.shift());
@@ -56,5 +57,4 @@ function mergeSort(a) {
   var right = a.slice(mid);
  
   return merge(mergeSort(left), mergeSort(right));
-
 }

@@ -4,7 +4,7 @@
  * @Author: zhouhong07
  * @Date: 2019-10-29 15:02:11
  * @LastEditors: zhouhong07
- * @LastEditTime: 2019-10-29 15:05:26
+ * @LastEditTime: 2020-07-20 10:29:53
  */
 let tree = {
   "id": 0,
@@ -72,3 +72,16 @@ function getListWithDLR(obj) {
 }
 getListWithDLR(tree);
 console.log("arr",arrD.length);
+
+
+//翻转二叉树
+var invertTree = function(root) {
+  if (root !== null) {
+    var temp = root.left;
+    root.left = root.right;
+    root.right = temp;
+    invertTree(root.left); 
+    invertTree(root.right);
+  }
+  return root;
+};
