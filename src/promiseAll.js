@@ -4,7 +4,7 @@
  * @Author: zhouhong07
  * @Date: 2020-04-03 09:47:23
  * @LastEditors: zhouhong07
- * @LastEditTime: 2020-07-14 10:05:46
+ * @LastEditTime: 2020-07-22 10:59:13
  */ 
 
 function promiseAll(promises) {
@@ -31,9 +31,9 @@ function promiseAll(promises) {
 
 const  promiseAll = (promises) => {
   return new Promise((resolve, reject) => {
-    let count = 0 ;
-    let result = [] ; 
-    let len = promises.length ;
+    let count = 0 ; //记录完成的异步任务数量
+    let result = [] ; //异步结果
+    let len = promises.length ; //异步任务数量
     for(let i = 0 ; i < len ; i++) {
       return Promise.resolve(promises[i]).then((value) => {
         result[i] = value ;

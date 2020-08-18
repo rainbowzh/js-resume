@@ -4,7 +4,7 @@
  * @Author: zhouhong07
  * @Date: 2020-07-17 16:23:10
  * @LastEditors: zhouhong07
- * @LastEditTime: 2020-07-21 11:27:26
+ * @LastEditTime: 2020-08-12 11:28:57
  */ 
 
 var lengthOfLongestSubstring = function(s) {
@@ -25,7 +25,7 @@ var lengthOfLongestSubstring = function(s) {
 };
 
 
-//字符串全排列--finish
+//最长无重复子串--finish
 var strFunc = (arr) => {
   let res = 1 ;
   if(arr.length < 3) {
@@ -48,15 +48,15 @@ var strFunc = (arr) => {
 
 
 //字符串全排列---todo
-var perm = function(s) {
+var permute = function(nums) {
   var result = [];
-  if (s.length <= 1) {
-    return [s];
+  if (nums.length <= 1) {
+    return [nums];
   } else {
-    for (var i = 0; i < s.length; i++) {
-      var c = s[i];
-      var newStr = s.slice(0, i) + s.slice(i + 1, s.length);
-      var l = perm(newStr);
+    for (var i = 0; i < nums.length; i++) {
+      var c = nums[i];
+      var newStr = nums.slice(0, i) + nums.slice(i + 1, nums.length);
+      var l = permute(newStr);
       console.log('newStr:', newStr);
       for (var j = 0; j < l.length; j++) {
         var tmp = c + l[j];
@@ -113,3 +113,31 @@ var threeSum = function(nums) {
 
     return res;
 };
+
+
+//出现重复次数最多的字符
+const maxTime = (str) => {
+  let num = 0; //出现的次数
+  let res = "" ; //哪个字符出现最多
+  let result = {} ;
+  const temp = str.split("");
+  for(let  i = 0; i< temp.length ;i ++) {
+    if(result[temp[i]]) {
+      result[temp[i]] += 1 ;
+    }
+    else {
+      result[temp[i]] = 1 ;
+    }
+  }
+
+  for(let j in result) {
+    if(result[j] > num) {
+      num = result[j] ;
+      res = j ;
+    }
+  }
+  return {
+    num ,
+    res
+  }
+}
