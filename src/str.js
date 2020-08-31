@@ -4,7 +4,7 @@
  * @Author: zhouhong07
  * @Date: 2020-07-17 16:23:10
  * @LastEditors: zhouhong07
- * @LastEditTime: 2020-08-12 11:28:57
+ * @LastEditTime: 2020-08-26 20:12:58
  */ 
 
 var lengthOfLongestSubstring = function(s) {
@@ -62,6 +62,7 @@ var permute = function(nums) {
         var tmp = c + l[j];
         console.log('temp',tmp);
         result.push(tmp);
+        console.log(result);
       }
     }
   }
