@@ -6,7 +6,7 @@ const { RuleTester } = require("eslint");
  * @Author: zhouhong07
  * @Date: 2019-10-29 15:02:11
  * @LastEditors: zhouhong07
- * @LastEditTime: 2020-08-18 11:05:49
+ * @LastEditTime: 2020-09-01 09:57:13
  */
 let tree = {
   "id": 0,
@@ -156,12 +156,12 @@ var levelOrderBottom = function(root) {
   queue = [root] ;
   while(queue.length) {
     let curr = [],
-        temp = []
+    temp = []
     while(queue.length) {
-        let node = queue.shift();
-        curr.push(node.val);
-        if(node.left) temp.push(node.left);
-        if(node.right) temp.push(node.right);
+      let node = queue.shift();
+      curr.push(node.val);
+      if(node.left) temp.push(node.left);
+      if(node.right) temp.push(node.right);
     }
     res.push(curr) ;
     queue = temp ;
@@ -169,7 +169,3 @@ var levelOrderBottom = function(root) {
   return res.reverse() ;
 };
 
-
-const test = (root) => {
-  
-}
