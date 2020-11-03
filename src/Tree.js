@@ -6,7 +6,7 @@ const { RuleTester } = require("eslint");
  * @Author: zhouhong07
  * @Date: 2019-10-29 15:02:11
  * @LastEditors: zhouhong07
- * @LastEditTime: 2020-09-01 09:57:13
+ * @LastEditTime: 2020-11-03 17:38:27
  */
 let tree = {
   "id": 0,
@@ -154,11 +154,11 @@ var levelOrderBottom = function(root) {
   if(!root) return [] ;
   let res = [], 
   queue = [root] ;
-  while(queue.length) {
+  while(queue.length) { //分层
     let curr = [],
-    temp = []
-    while(queue.length) {
-      let node = queue.shift();
+    temp = [] ;
+    while(queue.length) { //每一层的左右节点统计
+      let node = queue.shift(); //删除并返回数组中的第一个元素
       curr.push(node.val);
       if(node.left) temp.push(node.left);
       if(node.right) temp.push(node.right);
@@ -166,6 +166,9 @@ var levelOrderBottom = function(root) {
     res.push(curr) ;
     queue = temp ;
   }
-  return res.reverse() ;
+  return res ;
 };
 
+
+
+//

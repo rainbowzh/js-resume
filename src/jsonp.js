@@ -15,7 +15,7 @@ let myjsonp = function (url, callback="jsonpCallback") {
 
   document.body.appendChild(scriptBody) ;
 
-  return new Promise((resolve, reject) => {
+  return new ((resolve, reject) => {
     window[callback] = (data) => {
        try{
         resolve(data)
@@ -54,7 +54,7 @@ let jsonp = function (url, data = {}, callback) {
 }
 
 
-//进行promise优化
+//进行优化
 let jsonp = function (url, data = {}, callback='callback') {
   // 转化数据为url字符串形式
   let dataStr = url.indexOf('?') === -1 ? '?' : '&'
@@ -69,8 +69,8 @@ let jsonp = function (url, data = {}, callback='callback') {
  
   // append到页面中 添加到页面就立刻发起请求
   document.body.appendChild(scriptBody)
-  //返回一个promise
-  return new Promise((resolve, reject) => {
+  //返回一个
+  return new ((resolve, reject) => {
     window[callback] = (data) => {
       try {
         resolve(data)

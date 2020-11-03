@@ -4,7 +4,7 @@
  * @Author: zhouhong07
  * @Date: 2019-10-29 10:30:07
  * @LastEditors: zhouhong07
- * @LastEditTime: 2020-07-08 17:15:28
+ * @LastEditTime: 2020-09-09 19:26:37
  */
 function myPromise(constructor){
     let self=this;
@@ -15,7 +15,7 @@ function myPromise(constructor){
         //两个==="pending"，保证了状态的改变是不可逆的
        if(self.status==="pending"){
           self.value=value;
-          self.status="resolved";
+          self.status="fulfilled";
        }
     }
     function reject(reason){
