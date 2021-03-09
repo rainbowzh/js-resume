@@ -36,7 +36,7 @@ function parseParam(url) {
 }
 
 
-//url字典
+//
 const paseUrl = (url) => {
   const params = url.indexOf('?') == -1 ? "" : url.slice( url.indexOf("?")+1 );
   const paramsArr = params.split('&') ;

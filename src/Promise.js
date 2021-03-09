@@ -4,7 +4,7 @@
  * @Author: zhouhong07
  * @Date: 2019-10-29 10:30:07
  * @LastEditors: zhouhong07
- * @LastEditTime: 2020-09-09 19:26:37
+ * @LastEditTime: 2020-12-10 15:38:02
  */
 function myPromise(constructor){
     let self=this;
@@ -49,7 +49,6 @@ myPromise.prototype.then=function(onFullfilled,onRejected){
 var p=new myPromise(function(resolve,reject){resolve(1)});
 p.then(function(x){console.log(x)})
 //输出1
-
 
 
 /**
@@ -103,3 +102,6 @@ function limitLoad (limit, loadImg, urls) {
     Promise.all(promises);
   })
 }
+
+
+

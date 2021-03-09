@@ -6,7 +6,7 @@ const { RuleTester } = require("eslint");
  * @Author: zhouhong07
  * @Date: 2019-10-29 15:02:11
  * @LastEditors: zhouhong07
- * @LastEditTime: 2020-11-03 17:38:27
+ * @LastEditTime: 2020-11-04 14:14:32
  */
 let tree = {
   "id": 0,
@@ -141,7 +141,7 @@ const trieMiddle = (root) => {
       node = node.left ;
     }
     stack.pop();
-    list.push(node.val);
+    res.push(node.val);
     node = node.right;
   }
   
