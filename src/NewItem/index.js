@@ -4,7 +4,7 @@
  * @Author: zhouhong07
  * @Date: 2020-12-08 15:00:30
  * @LastEditors: zhouhong07
- * @LastEditTime: 2021-03-09 17:15:13
+ * @LastEditTime: 2021-03-22 19:51:33
  */
 
 //(1)大数相加 / 大数相乘（字符串相加，字符串相乘）
@@ -1648,21 +1648,323 @@ eventEmitter.emit('article2', 'Javascript 观察者模式');
 */
 
 
+//输入一个日期 返回几秒前 几天前或者几月前
+function getTimer(stringTime) {
+  var minute = 1000 * 60;
+  var hour = minute * 60;
+  var day = hour * 24;
+  var week = day * 7;
+  var month = day * 30;
+  var time1 = new Date().getTime();//当前的时间戳
+  console.log(time1);
+  var time2 = Date.parse(new Date(stringTime));//指定时间的时间戳
+  console.log(time2);
+  var time = time1 - time2;
+
+  var result = null;
+  if (time < 0) {
+      alert("设置的时间不能早于当前时间！");
+  } else if (time / month >= 1) {
+      result = "发布于：" + parseInt(time / month) + "月前";
+  } else if (time / week >= 1) {
+      result = "发布于：" + parseInt(time / week) + "周前";
+  } else if (time / day >= 1) {
+      result = "发布于：" + parseInt(time / day) + "天前";
+  } else if (time / hour >= 1) {
+      result = "发布于：" + parseInt(time / hour) + "小时前";
+  } else if (time / minute >= 1) {
+      result = "发布于：" + parseInt(time / minute) + "分钟前";
+  } else {
+      result = "刚刚发布！";
+  }
+  return result;
+}
+getTimer("2020-04-20 15:06:36");
+
+
+//map和原生对象的区别
+
+//koa洋葱模型  compose实现
+function compose() {
+  // 递归函数
+  let self = this;
+  function dispatch(index) {
+    // 异步实现
+    // 如果所有中间件都执行完跳出，并返回一个 Promise
+    if (index === self.middlewares.length) return Promise.resolve();
+
+    // 取出第 index 个中间件并执行
+    const route = self.middlewares[index];
+
+    // 执行后返回成功态的 Promise
+    return Promise.resolve(route(() => dispatch(index + 1)));
+  }
+
+  // 取出第一个中间件函数执行
+  dispatch(0);
+}
+
+
+//实现一个eventEmitter（发布订阅）
+class EventEmitter {
+  constructor () {
+    this.events = {};
+  }
+  // 订阅事件
+  on (type, cb) {
+    if (!this.events[type]) {
+      this.events[type] = [];
+    }
+    this.events[type].push(cb);
+  }
+  // 发布事件
+  emit(type, ...args) {
+    if (this.events[type]) {
+      this.events[type].forEach(cb => {
+        cb(...args);
+      });
+    }
+  }
+  // 只执行一次
+  once(type, cb) {
+    const _this = this;
+    function one() {
+      cb.call(_this, arguments);
+      _this.off(type, one);
+    }
+    this.on(type, one);
+  }
+  // 移除事件
+  off(type, cb) {
+    if (this.events[type]) {
+      this.events[type] = this.events[type].filter(item => item != cb );
+    }
+  }
+}
+// 测试例子
+var myEmitter = new EventEmitter();
+myEmitter.on('study', function(data) {
+  console.log(`学习${data}`);
+});
+myEmitter.on('eat', function(data) {
+  console.log(`吃${data}`);
+});
+myEmitter.once('relax', function() {
+  console.log('relax');
+})
+myEmitter.emit('study', 'javascript'); // => 学习javascript
+myEmitter.emit('eat', '苹果'); // => 吃苹果
+myEmitter.emit('relax'); // => relax
+myEmitter.emit('relax'); // => undefined
+
+
+//观察者模式
+class Observer {
+    constructor(cb) {
+        if(!cb || typeof cb !== 'function') {
+            throw new Error('Observer构造器必须传入函数类型');
+            return;
+        }
+        this.cb = cb;
+    }
+    // 被目标对象通知时执行
+    update() {
+        this.cb();
+    }
+}
+
+class Subject {
+    // 维护观察者列表
+    constructor(observer) {
+        this.observerList = [];
+    }
+    // 添加一个观察者
+    addObserver(observer) {
+        this.observerList.push(observer);
+    }
+    // 通知所有观察者
+    notify() {
+        this.observerList.forEach(observer => {
+            observer.update();
+        })
+    }
+}
+
+// 测试例子
+const cbFun = function() {
+    console.log('update');
+}
+const observer = new Observer(cbFun);
+const subject = new Subject();
+subject.addObserver(observer);
+subject.notify(); // update
+
+
+
+
+//使用setTimeout模拟setInterval
+function _setInterval(fn, time) {
+  function _inner() {
+      fn();
+      setTimeout(_inner, time);
+  }
+  _inner();
+}
+// 测试例子
+_setInterval(function() {
+    console.log(1);
+}, 1000);
+
+
+
+//使用promise实现ajax
+function _ajax (url, method = "GET", data = null) {
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        resolve(JSON.parse(xhr.responseTxt));
+      } else {
+        reject(xhr.responseText);
+      }
+    }
+    xhr.open(method, url, true);
+    if (method.toLowerCase() === "post") {
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencode');
+    }
+    xhr.send(data);
+  })
+}
+
+
+/**
+ * 实现setinterval用requestAnimation
+ */
+function setInterval(callback, interval) {
+  let timer
+  const now = Date.now
+  let startTime = now()
+  let endTime = startTime
+  const loop = () => {
+    timer = window.requestAnimationFrame(loop)
+    endTime = now()
+    if (endTime - startTime >= interval) {
+      startTime = endTime = now()
+      callback(timer)
+    }
+  }
+  timer = window.requestAnimationFrame(loop)
+  return timer
+}
+
+let a = 0
+setInterval(timer => {
+  console.log(1)
+  a++
+  if (a === 3) cancelAnimationFrame(timer)
+}, 1000)
+
+
+
+//node的事件循环
+//V8的垃圾回收机制
+
+
+//options请求是为什么，node中如何解决options请求
+
+
+
+//promise带延迟功能的链式调用
+//维护异步队列
+class People {
+  constructor (name) {
+    this.name = name ;
+    this.queue = Promise.resolve() ;
+    this.init() ;
+  }
+
+  init() {
+    console.log(`hello, ${this.name}`) ;
+  }
+
+  sleep (time = 1) {
+    this.queue = this.queue.then((res) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(res)
+        }, time * 1000)
+      })
+    })
+    return this ;
+  }
+
+  eat (food) {
+    this.queue =this.queue.then((res) => {
+      console.log(`${this.name} eat ${food}`);
+    });
+    return this ;
+  }
+}
+
+//new People('whr').sleep(3).eat('apple').sleep(5).eat('durian');
+
+
+
+//后序遍历
+function pos(root) {
+  if (root) {
+    let stack1 = [];
+    let stack2 = [];
+    // 后序遍历是先左再右最后根
+	// 所以对于一个栈来说，应该先 push 根节点
+    // 然后 push 右节点，最后 push 左节点
+    stack1.push(root);
+    while (stack1.length > 0) {
+      root = stack1.pop();
+      stack2.push(root);
+      if (root.left) {
+        stack1.push(root.left);
+      }
+      if (root.right) {
+        stack1.push(root.right);
+      }
+    }
+    while (stack2.length > 0) {
+      console.log(stack2.pop());
+    }
+  }
+}
+
+
+//斐波那契
+function fib(n) {
+  let array = new Array(n + 1).fill(null) ;
+  array[0] = 0
+  array[1] = 1
+  for (let i = 2; i <= n; i++) {
+    array[i] = array[i - 1] + array[i - 2]
+  }
+  return array[n] ;
+}
+fib(10)
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
+//lodash.get实现
+const get = (obj, path = "", defaultValue = undefined) => {
+  const paths = path.replace(/\[/g, ".").replace(/\]/g, "").split(".");
+  let result = obj;
+  for (let i = 0; i < paths.length; i++) {
+    result = result ? result[paths[i]] : undefined;
+    if (result == undefined) {
+      return defaultValue;
+    }
+  }
+  return result;
+};
 
 
 
