@@ -4,7 +4,7 @@
  * @Author: zhouhong07
  * @Date: 2020-12-08 15:00:30
  * @LastEditors: zhouhong07
- * @LastEditTime: 2021-03-22 19:51:33
+ * @LastEditTime: 2021-04-02 15:51:37
  */
 
 //(1)大数相加 / 大数相乘（字符串相加，字符串相乘）
@@ -900,7 +900,7 @@ function limitLoad (limit, loadImg, urls) {
     })
   },Promise.resolve())
   .then(() => {
-    Promise.all(promises);
+    return Promise.all(promises);
   })
 }
 
@@ -1704,6 +1704,26 @@ function compose() {
   dispatch(0);
 }
 
+function compose (middleware) {
+  return function (context, next) {
+    // last called middleware #
+    let index = -1
+    return dispatch(0)
+    function dispatch (i) {
+      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
+      index = i
+      let fn = middleware[i]
+      if (i === middleware.length) fn = next
+      if (!fn) return Promise.resolve()
+      try {
+        return Promise.resolve(fn(context, dispatch.bind(null, i + 1)));
+      } catch (err) {
+        return Promise.reject(err)
+      }
+    }
+  }
+}
+
 
 //实现一个eventEmitter（发布订阅）
 class EventEmitter {
@@ -1967,17 +1987,375 @@ const get = (obj, path = "", defaultValue = undefined) => {
 };
 
 
+//链表反转
+function reverse( linkedList ){
+  var head = linkedList.head;
+  // 如果只有一个节点 或者 是空链表
+  if( head === null || head.next === null ){
+    return;
+  }
+  var p = head;
+  var q = p.next;
+  // 反转后的头结点变成尾节点
+  head.next = null;
+  while(q){
+    r = q.next;
+    q.next = p;
+    p = q;
+    q = r;
+  }
+  // 退出循环后 r = q.next = null, q.next = q; p=q; q=null;
+  // p指向原来节点的尾节点， 那么翻转后，尾节点变成头结点
+  linkedList.head = p;
+}
+
+//LRU缓存机制(最近最少使用)
+class LRUCache {
+  constructor(capacity) {
+    this.capacity = capacity
+    this.map = new Map();
+  }
+
+  get(key) {
+    let val = this.map.get(key);
+    if (val === undefined) return -1;
+
+    this.map.delete(key); // 因为被用过一次，原有位置删除
+    this.map.set(key, val); // 放入最下面表示最新使用
+    return val;
+  }
+
+  put(key, val) {
+    if (this.map.has(key)) this.map.delete(key); // 如果有，删除
+    this.map.set(key, val); // 放到最下面表示最新使用
+
+    if (this.map.size > this.capacity) {
+      // 这里有个知识点
+      //需要特别注意的是，Map 的遍历顺序就是插入顺序。
+      // map的entries方法，还有keys方法(可以看mdn))，会返回一个迭代器
+      // 迭代器调用next也是顺序返回，所以返回第一个的值就是最老的，找到并删除即可
+      //基于ES6 Map中keys的有序性来实现
+      // 一个Map对象在迭代时会根据对象中元素的插入顺序来进行
+      // get操作
+      // 如果元素存在，先delete再set, 元素便会置为最新使用；如果不存在，返回-1
+      // put操作
+      // 如果元素存在，先delete再set, 元素便会置为最新使用；
+      // 如果容器超限，进行删除末尾元素操作，使用 Map{}.keys().next()得到迭代器的第一个元素，为使用时间最远的元素，进行删除
+      this.map.delete(this.map.entries().next().value[0])
+    }
+  }
+}
+
+
+
+//字符串匹配，返回第一个不匹配的index
+const func = (str) => {
+  let temp = ["{", "(", "["] ;
+  let obj= new Map() ;
+  obj.set("{","}").set("(",")").set("[","]") ;
+  let stack = [] ;
+  
+
+  for(let i = 0 ;i< str.length ;i++) {
+    if(temp.includes(str[i])) {
+      stack.push(str[i]) ;
+    }else{
+      let item = stack.pop() ;
+      if(obj.has(item) && obj.get(item) === str[i]) {
+        continue ;
+      }else{
+        return i ;
+      }
+    }
+  }
+  return  -1 ;
+} 
+
+
+//数组里面第K大的元素
+const func = (arr, target) => {
+  arr.sort((a, b) => b - a) ;
+  let temp = new Set(arr) ;
+  console.log(arr, temp);
+  return [...temp][target - 1] ;
+}
+
+
+
+//最长公共前缀
+const func = (arr) => {
+  let temp = arr[0] ;
+  let str = "" ;
+  for(let i = 0 ;i < temp.length ;i ++) {
+    str += temp[i] ;
+    for(let j = 1 ; j < arr.length ; j ++) {
+      if(arr[j].slice(0, i+1) !== str) {
+        return arr[j].slice(0, i);
+      }
+    }
+  }
+}
+
+
+//翻转二叉树
+var invertTree = function(root) {
+  if (root === null) {
+      return null;
+  }
+  const left = invertTree(root.left);
+  const right = invertTree(root.right);
+  root.left = right;
+  root.right = left;
+  return root;
+};
+
+
+//有序数组绝对值最小的值
+const func = (arr) => {
+  if(arr.length === 1) return arr[0] ;
+  let left = arr[0] , right = arr[arr.length -1] ;
+  if(left * right < 0) {
+    let temp = left >0 ? 1 : -1 ;
+    for(let i = 0 ;i < arr.length ;i ++) {
+      if(arr[i] * temp < 0) {
+        return Math.abs(arr[i]) > Math.abs(arr[i-1]) ? Math.abs(arr[i-1]) : Math.abs(arr[i]) ;
+      }
+    }
+  }else if(left * right > 0) {
+    if(left > 0) {
+      return left ;
+    }else{
+      return right ;
+    }
+  }else {
+    if(left >  right) {
+      return left ;
+    }else{
+      return right ;
+    }
+  }
+}
+
+
+
+//实现reduce
+const reduce = (fn, initValue) => {
+  let result = initValue ;
+  for(let i =0 ;i < arr.length ;i ++) {
+    if(initValue&& i==0) {
+      result = fn(arr[0], arr[i], i,arr) ;
+    }else{
+      result = fn(result, arr[i], i, arr) ;
+    }
+  }
+  return result ;
+}
+
+
+
+//只出现一次的数
+const func = (arr) => {
+  let obj = new Map() ;
+  for(let i = 0 ;i < arr.length ;i ++) {
+    if(obj.get(arr[i])) {
+      obj.set(arr[i], obj.get(arr[i])+1);
+    }
+    else{
+      obj.set(arr[i], 1);
+    }
+  }
+
+  let result = [] ;
+  console.log(obj);
+  for(let i of obj) {
+    console.log(i);
+    if(i[1] == 1) {
+      result.push(i[0]) ;
+    }
+  }
+  return result ;
+}
+
+
+//[2,2,1,1,1,1,2,2]
+//多数元素  大于[n /2 ]
+const func = (arr) => {
+  let len = arr.length ;
+  let hash = new Map() ;
+  for(let i = 0 ;i< len; i++) {
+    if(hash.get(arr[i])) {
+      hash.set(arr[i],hash.get(arr[i])+1) ;
+      if(hash.get(arr[i]) > Math.floor(len/2)) {
+        return arr[i] ;
+      }
+    }else{
+      hash.set(arr[i], 1) ;
+    }
+  }
+}
+
+
+//[[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]]  target= 5, return true
+//搜索二维矩阵
+//找出规律，从右上角开始或者左下角开始
+const func = (arr, target) => {
+  let x = arr[0].length -1, xlen = arr[0].length
+  let y = 0, ylen = arr.length ;//从零开始
+  
+  while(x>=0 &&y<ylen) {
+    console.log("x:",x,"y:",y) ;
+    if(target == arr[y][x]) {
+      return true ;
+    }else if(target > arr[y][x]) { //大于  往下找
+      y++ ;
+    }else if(target < arr[y][x]) { //小于  往左找
+      x--;
+    }
+  }
+  return false ;
+}
+
+
+//合并有序链表
+var mergeTwoLists = function(l1, l2) {
+  let current = new ListNode();
+  const dummy = current;
+
+  while (l1 || l2) {
+    if (!l1) {
+      current.next = l2;
+      return dummy.next;
+    } else if (!l2) {
+      current.next = l1;
+      return dummy.next;
+    }
+
+    if (l1.val <= l2.val) {
+      current.next = l1;
+      l1 = l1.next;
+    } else {
+      current.next = l2;
+      l2 = l2.next;
+    }
+
+    current = current.next;
+  }
+
+  return dummy.next;
+};
 
 
 
 
+//合并两个有序数组
+const mergeArr = (arr1, arr2) => {
+  let temp = arr1.length - arr2.length ;
+  let len = arr1.length - arr2.length > 0 ? arr2.length  : arr1.length ;
+  let i = 0, j = 0;
+  let result = [] ;
+  while(i !== len) {
+    if(arr1[i] <= arr2[j]) {
+      result.push(arr1[i]);
+      i++ ;
+    }else{
+      result.push(arr2[j]);
+      j++ ;
+    }
+  }
+  if(temp > 0){
+    return result.concat(arr1.slice(i));
+  }
+  else{
+    return result.concat(arr2.slice(j));
+  }
+}
 
 
+//实现compose函数，
+// const compose = (a,b) =>
+//(c) => a(b(c))
+
+function compose() {
+  let fns = [...arguments];
+
+  return function() {
+    let args = [...arguments];
+    let result = fns.reduce((ret, fn) => {
+      ret = fn.apply(this, ret);
+      return Array.isArray(ret) ? ret : [ret];
+    }, args);
+    
+    return result;
+  }
+}
 
 
+class PromisePool {
+  constructor(max, fn) {
+    this.max = max; // 最大并发数
+    this.fn = fn;   // 自定义的文件上传函数
+    this.pool = []; // 并发池
+    this.urls = []; // 剩余的请求地址
+  }
 
+  start(urls) {
+    this.urls = urls;
+    // 先循环把并发池塞满
+    while (this.pool.length < this.max) {
+      let url = this.urls.shift();
+      this.setTask(url);
+    }
+    // 利用Promise.race 方法来获得并发池中某任务完成的信号
+    let race = Promise.race(this.pool);
+    return this.run(race);
+  }
 
+  run(race) {
+    race
+      .then(res => {
+        // 每当并发池跑完一个任务，就再塞入一个任务
+        let url = this.urls.shift();
+        this.setTask(url);
+        return this.run(Promise.race(this.pool));
+      });
+  }
+  setTask(url) {
+    if (!url) return;
+    let task = this.fn(url);
+    this.pool.push(task); // 将该任务推入pool并发池中
+    console.log(`\x1B[43m ${url} 开始，当前并发数：${this.pool.length}`);
+    task.then(res => {
+      // 请求结束后将该Promise任务从并发池中移除
+      this.pool.splice(this.pool.indexOf(task), 1);
+      console.log(`\x1B[43m ${url} 结束，当前并发数：${this.pool.length}`);
+    });
+  }
+}
 
+// test
+const URLS = [
+  'bytedance.com',
+  'tencent.com',
+  'alibaba.com',
+  'microsoft.com',
+  'apple.com',
+  'hulu.com',
+  'amazon.com'
+];
+
+// 自定义请求函数
+var requestFn = url => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(`任务 ${url} 完成`);
+    }, 1000)
+  }).then(res => {
+    console.log('完成 ', res);
+  })
+}
+
+const pool = new PromisePool(3, requestFn); // 并发数为3
+pool.start(URLS);
 
 
 
